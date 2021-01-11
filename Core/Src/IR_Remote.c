@@ -156,8 +156,21 @@ int16_t my_decode(decode_results *results)
 	return false;
 }
 
+char* getProtocolString(decode_type_t protocol) {
+	char *protocols[] = { "UNKNOWN", "RC5", "RC6", "NEC", "SONY",
+			"PANASONIC", "JVC", "SAMSUNG", "WHYNTER", "AIWA_RC_T501", "LG",
+			"SANYO", "MITSUBISHI", "DISH", "SHARP", "DENON", "PRONTO"
+	};
+
+	return protocols[protocol];
+}
+
 void my_enableIRIn() // initialization
 {
+	if (in_enabled) {
+		return;
+	}
+
 	DWT_Init();
 
 	HAL_TIM_Base_DeInit(&htim3);

@@ -53,56 +53,52 @@ extern TIM_HandleTypeDef htim3;
 
 typedef struct // The fields are ordered to reduce memory over caused by struct-padding
 {
-		uint8_t       rcvstate;        // State Machine state
-		uint8_t       rawlen;          // counter of entries in rawbuf
-		uint16_t      timer;           // State timer, counts 50uS ticks.
-		uint16_t      rawbuf[RAWBUF];  // raw data
-		uint8_t       overflow;        // Raw buffer overflow occurred
+	uint8_t rcvstate;        // State Machine state
+	uint8_t rawlen;          // counter of entries in rawbuf
+	uint16_t timer;           // State timer, counts 50uS ticks.
+	uint16_t rawbuf[RAWBUF];  // raw data
+	uint8_t overflow;        // Raw buffer overflow occurred
 } irparams_t;
 
 volatile irparams_t irparams;
 
-typedef enum
-{
-		UNUSED = -1,
-		UNKNOWN = 0,
-		RC5 = 1,
-		RC6 = 2,
-		NEC = 3,
-		SONY = 4,
-		PANASONIC = 5,
-		JVC = 6,
-		SAMSUNG = 7,
-		WHYNTER = 8,
-		AIWA_RC_T501 = 9,
-		LG = 10,
-		SANYO = 11,
-		MITSUBISHI = 12,
-		DISH = 13,
-		SHARP = 14,
-		DENON = 15,
-		PRONTO = 16,
+typedef enum {
+	UNUSED = -1,
+	UNKNOWN = 0,
+	RC5 = 1,
+	RC6 = 2,
+	NEC = 3,
+	SONY = 4,
+	PANASONIC = 5,
+	JVC = 6,
+	SAMSUNG = 7,
+	WHYNTER = 8,
+	AIWA_RC_T501 = 9,
+	LG = 10,
+	SANYO = 11,
+	MITSUBISHI = 12,
+	DISH = 13,
+	SHARP = 14,
+	DENON = 15,
+	PRONTO = 16,
 } decode_type_t;
 
-typedef enum
-{
-		RECV = 0,
-		TRAN = 1,
-		NONE = 2,
-		DECODE = 3
+char* getProtocolString(decode_type_t protocol);
+
+typedef enum {
+	RECV = 0, TRAN = 1, NONE = 2, DECODE = 3
 } remote_mode;
 extern remote_mode mode;
 
 // Results returned from the decoder
-typedef struct
-{
-		decode_type_t decode_type; // UNKNOWN, NEC, SONY, RC5, ...
-		uint16_t address; // Used by Panasonic & Sharp [16-bits]
-		uint32_t value; // Decoded value [max 32-bits]
-		int16_t bits; // Number of bits in decoded value
-		volatile uint16_t *rawbuf; // Raw intervals in 10uS ticks
-		int16_t rawlen; // Number of records in rawbuf
-		int16_t overflow; // true iff IR raw code too long
+typedef struct {
+	decode_type_t decode_type; // UNKNOWN, NEC, SONY, RC5, ...
+	uint16_t address; // Used by Panasonic & Sharp [16-bits]
+	uint32_t value; // Decoded value [max 32-bits]
+	int16_t bits; // Number of bits in decoded value
+	volatile uint16_t *rawbuf; // Raw intervals in 10uS ticks
+	int16_t rawlen; // Number of records in rawbuf
+	int16_t overflow; // true iff IR raw code too long
 } decode_results;
 
 decode_results results;
@@ -114,6 +110,8 @@ extern int in_enabled;
 int MATCH(int measured, int desired);
 int MATCH_MARK(int measured_ticks, int desired_us);
 int MATCH_SPACE(int measured_ticks, int desired_us);
+
+void DWT_Init();
 
 int16_t my_decode(decode_results *results);
 long decodeHash(decode_results *results);
@@ -173,48 +171,48 @@ void my_disable();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 #if (DECODE_RC5 || DECODE_RC6)
-	// This helper function is shared by RC5 and RC6
-	int getRClevel(decode_results *results, int *offset, int *used, int t1);
+// This helper function is shared by RC5 and RC6
+int getRClevel(decode_results *results, int *offset, int *used, int t1);
 #endif
 
 #if DECODE_RC5
-	uint8_t decodeRC5(decode_results *results);
+uint8_t decodeRC5(decode_results *results);
 #endif
 
 #if DECODE_RC6
-	uint8_t decodeRC6(decode_results *results);
+uint8_t decodeRC6(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_NEC
-	uint8_t decodeNEC(decode_results *results);
+uint8_t decodeNEC(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_SONY
-	uint8_t decodeSony(decode_results *results);
+uint8_t decodeSony(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_PANASONIC
-	uint8_t decodePanasonic(decode_results *results);
+uint8_t decodePanasonic(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_JVC
-	uint8_t decodeJVC(decode_results *results);
+uint8_t decodeJVC(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_SAMSUNG
-	uint8_t decodeSAMSUNG(decode_results *results);
+uint8_t decodeSAMSUNG(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_WHYNTER
-	uint8_t decodeWhynter(decode_results *results);
+uint8_t decodeWhynter(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_AIWA_RC_T501
-	uint8_t decodeAiwaRCT501(decode_results *results);
+uint8_t decodeAiwaRCT501(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_LG
-	uint8_t  decodeLG(decode_results *results);
+uint8_t decodeLG(decode_results *results);
 #endif
 //......................................................................
 #if DECODE_SANYO
@@ -234,59 +232,60 @@ void my_disable();
 #endif
 //......................................................................
 #if DECODE_DENON
-	uint8_t decodeDenon(decode_results *results);
+uint8_t decodeDenon(decode_results *results);
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 void custom_delay_usec(unsigned long uSecs);
-void enableIROut(uint8_t khz) ;
+void enableIROut(uint8_t khz);
 void mark(unsigned int usec);
 void space(unsigned int usec);
 void sendRaw(uint16_t buf[], unsigned int len, uint8_t hz);
-void send(uint16_t buf[], unsigned int len, unsigned long data, int nbits, decode_type_t protocol);
+void send(uint16_t buf[], unsigned int len, unsigned long data, int nbits,
+		decode_type_t protocol);
 ///////////////////////////////////////////////////////////////////////////////////////////////
 #if SEND_RC5
-	void sendRC5(unsigned long data, int nbits);
+void sendRC5(unsigned long data, int nbits);
 #endif
 
 #if SEND_RC6
-	void sendRC6(unsigned long data, int nbits);
+void sendRC6(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_NEC
-	void sendNEC(unsigned long data, int nbits);
+void sendNEC(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_SONY
-	void sendSony(unsigned long data, int nbits);
+void sendSony(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_PANASONIC
-	void sendPanasonic(unsigned int address, unsigned long data);
+void sendPanasonic(unsigned int address, unsigned long data);
 #endif
 //......................................................................
 #if SEND_JVC
-	// JVC does NOT repeat by sending a separate code (like NEC does).
-	// The JVC protocol repeats by skipping the header.
-	// To send a JVC repeat signal, send the original code value
-	//   and set 'repeat' to true
-	void sendJVC(unsigned long data, int nbits, uint8_t repeat);
+// JVC does NOT repeat by sending a separate code (like NEC does).
+// The JVC protocol repeats by skipping the header.
+// To send a JVC repeat signal, send the original code value
+//   and set 'repeat' to true
+void sendJVC(unsigned long data, int nbits, uint8_t repeat);
 #endif
 //......................................................................
 #if SEND_SAMSUNG
-	void sendSAMSUNG(unsigned long data, int nbits);
+void sendSAMSUNG(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_WHYNTER
-	void sendWhynter(unsigned long data, int nbits);
+void sendWhynter(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_AIWA_RC_T501
-	void sendAiwaRCT501(int code);
+void sendAiwaRCT501(int code);
 #endif
 //......................................................................
 #if SEND_LG
-	void sendLG(unsigned long data, int nbits);
+void sendLG(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_SANYO
@@ -307,13 +306,10 @@ void send(uint16_t buf[], unsigned int len, unsigned long data, int nbits, decod
 #endif
 //......................................................................
 #if SEND_DENON
-	void sendDenon(unsigned long data, int nbits);
+void sendDenon(unsigned long data, int nbits);
 #endif
 //......................................................................
 #if SEND_PRONTO
 	void sendPronto(char* code, uint8_t repeat, uint8_t fallback);
 #endif
-
-
-
 

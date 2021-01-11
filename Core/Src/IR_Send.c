@@ -1,5 +1,11 @@
 #include <IR_Remote.h>
 
+void DWT_Init()
+{
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+	DWT->CYCCNT = 0;
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 void send(uint16_t buf[], unsigned int len, unsigned long data, int nbits, decode_type_t protocol)
@@ -43,6 +49,7 @@ void send(uint16_t buf[], unsigned int len, unsigned long data, int nbits, decod
 	else if (protocol == DENON) {
 		sendDenon(data, nbits);
 	}
+	my_disable();
 }
 
 void sendRaw(uint16_t buf[], unsigned int len, uint8_t hz)
@@ -76,6 +83,8 @@ void space(unsigned int time)
 
 void enableIROut(uint8_t khz)
 {
+	DWT_Init();
+
 	uint16_t pwm_freq = 0;
 	uint16_t pwm_pulse = 0;
 	pwm_freq = MYSYSCLOCK / (khz * 1000) - 1;
@@ -116,6 +125,7 @@ void enableIROut(uint8_t khz)
 
 void custom_delay_usec(unsigned long us)
 {
-	__HAL_TIM_SET_COUNTER(&htim2, 0);
-	while (__HAL_TIM_GET_COUNTER(&htim2) < us);  // Every Count for this timer should be 1 microsec.
+	uint32_t us_count_tic =  us * (MYSYSCLOCK / 1000000);
+	DWT->CYCCNT = 0U;
+	while(DWT->CYCCNT < us_count_tic);
 }

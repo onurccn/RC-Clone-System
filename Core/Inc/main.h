@@ -37,6 +37,37 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+typedef struct
+{
+		int8_t decode_type;
+		uint32_t value; // Decoded value [max 32-bits]
+		uint8_t rawLen;
+		uint8_t bitLen;
+		char name[10];
+} remote_data;
+
+typedef struct
+{
+    uint8_t pos;
+    int8_t decode_type;
+    uint32_t value; // Decoded value [max 32-bits]
+    uint8_t rawLen;
+    uint8_t bitLen;
+    uint16_t raw[100];
+    char name[10];
+} full_command_data;
+
+typedef struct
+{
+    full_command_data commands[11];
+    char name[20];
+} full_remote_data;
+
+typedef struct
+{
+    char remotes[100][20];
+    int remoteCount;
+} part_remote_data;
 
 /* USER CODE END ET */
 
@@ -74,9 +105,11 @@ void Error_Handler(void);
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define IR_In_Pin GPIO_PIN_5
+#define IR_In_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-#define recive_IR_Pin GPIO_PIN_5
-#define recive_IR_GPIO_Port GPIOB
+#define recive_IR_Pin IR_In_Pin
+#define recive_IR_GPIO_Port IR_In_GPIO_Port
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
